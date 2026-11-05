@@ -1,0 +1,258 @@
+nasm -f <format> <filename> [-o <output>]
+
+nasm -f elf myfile.asm
+
+nasm -f bin myfile.asm -o myfile.com
+
+nasm -f coff myfile.asm -l myfile.lst
+
+nasm -h
+
+NASM will normally choose the name of your output file for you; precisely how it does this is dependent on the object file format. For Microsoft object file formats (obj, win32 and win64), it will remove the .asm extension (or whatever extension you like to use – NASM doesn't care) from your source file name and substitute .obj. For Unix object file formats (aout, as86, coff, elf32, elf64, elfx32, ieee, macho32 and macho64) it will substitute .o. For dbg, ith and srec, it will use .dbg, .ith and .srec, respectively, and for the bin format it will simply remove the extension, so that myfile.asm produces the output file myfile.
+
+nasm -f bin program.asm -o program.com 
+nasm -f bin driver.asm -odriver.sys
+
+-f / DEFAULT is always bin / -o / -f elf
+
+nasm -f elf myfile.asm -l myfile.lst
+
+list - / list +
+
+-L (options intended for the debugging of NASM itself (including bug reporting), and not likely to be otherwise useful) options for general use are:
+
+-Lb show builtin macro packages (standard and %use, see section 5.9.4)
+
+-Lc list the data from INCBIN files (see section 3.2.3)
+
+-Ld show byte and repeat counts in decimal, not hex
+
+-Le show the preprocessed output
+
+-Lf ignore .nolist (force output) (see section 5.6.11)
+
+-LF ignore [LIST -] directives (force output) (see section 8.15)
+
+-Lm show multi-line macro calls with expanded parameters
+
+-Lp output a list file every pass, in case of errors
+
+-Ls show all single-line macro definitions
+
+-Lt list the full output from TIMES and ALIGN directives
+
+-L+ equivalent to -LbdefFmps
+
+-L++ equivalent to -L+ -Lct
+
+-Lw flush the output after every line (very slow!)
+
+-LX list instruction pattern line numbers from insns.xda
+
+-L! enable all listing options including debugging ones
+
+%pragma list options [+|-|*]{!|flags}...
++, - and * adds, removes, or restores to the command-line default the flags that follow
+
+%pragma list options +dm -s
+For example, to turn on the d and m flags but disable the s flag
+
+__?LIST_OPTIONS?__ and __?LIST_OPTIONS_DEFAULT?__
+%macro ... 
+  %xdefine %%saved_list_options __?LIST_OPTIONS?__ 
+  %pragma list options ; ... changing the options 
+  ; ... do stuff with special listing options ... 
+  %pragma list options -! +%%saved_list_options 
+%endmacro
+
+%pragma list options -! +__?LIST_OPTIONS_DEFAULT?__ / is same / %pragma list options *!
+
+-M / generate makefile dependencies on stdout. This can be redirected to a file for further processing
+-MG / generate makefile dependencies on stdout, nonexisting file is encountered, it is assumed to be a generated file and is added to the dependency list without a prefix
+-MF / can be used with the -M or -MG options to send the output to a file, rather than to stdout
+-MD / does not inhibit the normal operation of the assembler. Use this to automatically generate updated dependencies with every assembly session
+-MT / override the default name of the dependency target. This is normally the same as the output filename, specified by the -o option
+-MQ / The -MQ option acts as the -MT option, except it tries to quote characters that have special meaning in Makefile syntax
+-MP / causes NASM to emit a phony target without dependencies for each header file. This prevents make from complaining if a header file has been removed
+-MW / This quotes # as $# rather than \#, uses & rather than \ for continuation lines, and encloses filenames containing whitespace in double quotes
+
+nasm -M myfile.asm > myfile.dep
+
+nasm -M -MF myfile.dep myfile.asm
+
+nasm -f elf -o myfile.o -MD myfile.dep myfile.asm
+the filename set in the -MF option;
+the output filename from the -o option with .d appended;
+the input filename with the extension set to .d
+
+-g / to enable output, Enabling Debug Information
+-F / Debug Information Format
+This should not be confused with the -f dbg output format option
+
+-X / Selecting an Error Reporting Format
+Currently, two error reporting formats may be selected. They are the -Xvc option and the -Xgnu option. The GNU format is the default and looks like this
+filename.asm:65: error: specific error message
+
+nasm -Z myfile.err -f obj myfile.asm
+taking a filename argument which causes errors to be sent to the specified files rather than standard error
+
+-E / conventionally used for preprocessing only, with disastrous results
+
+nasm -s -f obj myfile.asm | more
+-s / Send Errors to stdout. redirects error messages to stdout rather than stderr. assemble the file myfile.asm and pipe its output to the more
+
+nasm -ic:\macrolib\ -f obj myfile.asm
+-i / Include File Search Directories
+-ifoo / 
+%include
+%pathsearch
+Now the trailing path separator is made to always present, thus -ifoo will be considered as the -ifoo/ directory
+
+nasm myfile.asm -p myinc.inc
+-p / allows you to specify files to be pre-included into your source file
+--include / placing the directive
+-I / 
+-D / 
+-U / 
+-P /
+
+nasm myfile.asm -dFOO=100
+%define FOO 100
+-p / ives an alternative to placing %include directives at the start of a source file
+-d / ives an alternative to placing a %define directive
+-dFOO / equivalent to coding %define FOO, form of the directive may be useful for selecting assembly-time options which are then tested using %ifdef, for example -dDEBUG
+-dDEBUG / 
+-D / 
+
+nasm myfile.asm -dFOO=100 -uFOO
+-u / undefines a macro that would otherwise have been pre-defined
+-p / either automatically or by a -p or -d option specified earlier on the command lines
+-d / either automatically or by a -p or -d option specified earlier on the command lines
+-U / 
+
+%assign tablesize ($-tablestart)
+-e / this option can also be written -e (-E)
+-E / Preprocess Only, will cause NASM to preprocess its input file, expand all the macro references, remove all the comments and preprocessor directives, and print the resulting file on standard output
+
+-a / Suppress Preprocessing, requiring no argument, instructs NASM to replace its powerful preprocessor with a stub preprocessor which does nothing
+
+-O / tell NASM to carry out different levels of optimization, Multiple flags can be specified after the -O options, some of which can be combined in a single option
+-Oxv / 
+-O0 / No optimization. All operands take their long forms, if a short form is not specified, except conditional jumps
+-O1 / Minimal optimization. As above, but immediate operands which will fit in a signed byte are optimized, unless the long form is specified
+-Ox / Multipass optimization. Minimize branch offsets and signed immediate bytes, overriding size specification unless the strict keyword has been used
+-Ov / At the end of assembly, print the number of passes actually executed.
+
+-t / ocal labels may be prefixed with @@ instead of, size override is supported within brackets mov eax,[DWORD val], 
+supported (arg, elif, else, endif, if, ifdef, ifdifi, ifndef, include, local)
+
+-w / Enable or Disable Assembly Warnings
+-W / Enable or Disable Assembly Warnings
+label-orphan; (enable) -w+label-orphan / (disable) -w-label-orphan
+-Wwarning-class and -Wno-warning-class
+-w+error or -Werror / treat warnings as error
+-w+error=warning-class or -Werror=warning-class
+-w+error=all / if no warning-class is specified NASM treats it
+-w-error or -Wno-error / disable
+
+-v / will display the version of NASM which you are using, and the date on which it was compiled
+
+nasm -f macho --gprefix _
+--[gl]prefix and --[gl]postfix Options
+--gprefix option prepends the given argument to all extern, common, static, and global symbols, 
+--lprefix option prepends to all other symbols. Similarly, 
+--gpostfix and --lpostfix options append the argument, in a manner similar to the --[gl]prefix options
+
+nasm -f macho --pragma "macho gprefix _"
+
+nasm -f macho --before "%pragma macho gprefix _"
+--before / preprocess statement before the input file
+
+nasm -f bin --bits 16 file.asm / compatibility with older versions of NASM
+nasm -f bin --before "BITS 16" file.asm / compatibility with older versions of NASM
+
+--limit-passes: Number of maximum allowed passes. Default is unlimited.
+
+--limit-stalled-passes: Maximum number of allowed unfinished passes. Default is 1000.
+
+--limit-macro-levels: Define maximum depth of macro expansion (in preprocess). Default is 10000
+
+--limit-macro-tokens: Maximum number of tokens processed during single-line macro expansion. Default is 10000000.
+
+--limit-mmacros: Maximum number of multi-line macros processed before returning to the top-level input. Default is 100000.
+
+--limit-rep: Maximum number of allowed preprocessor loop, defined under %rep. Default is 1000000.
+
+--limit-eval: This number sets the maximum allowed expression length. Default is 8192 on most systems.
+
+--limit-lines: Total number of source lines allowed to be processed. Default is 2000000000.
+
+--limit-params: Maximum number of multi-line macro parameters. Default is 16383.
+
+positive number, unlimited, maximum, or default
+
+nasm --limit-lines 1000
+%pragma limit lines 1000
+
+--keep-all / This option prevents NASM from deleting any output files even if an error happens
+
+--no-line / all %line directives in the source code are ignored. This can be useful for debugging already preprocessed code
+
+--reproducible / will not emit information that is inherently dependent on the NASM version or different from run to run (such as timestamps) into the output file
+
+-s -ic:\nasmlib\
+-dNAME="my name"
+
+NASM Requires Square Brackets For Memory References
+mov ax,[bar]
+a86, mov ax,var / var: dw 0 / defferent behavior
+
+NASM doesn't support the LODS, MOVS, STOS, SCAS, CMPS, INS, or OUTS instructions
+supports the forms such as LODSB, MOVSW, and SCASD / which explicitly specify the size of the components of the strings being manipulated
+
+NASM will not keep track of what values you choose to put in your segment registers, and will never automatically generate a segment override prefix
+
+NASM Doesn't Support Memory Models
+RETN or RETF; NASM accepts RET itself as an alternate form for RETN
+NASM also does not have any directives to support different 16-bit memory models
+
+Floating-Point Differences
+where MASM would call them ST(0), ST(1) and so on, and a86 would call them simply 0, 1 and so on, NASM chooses to call them st0, st1
+
+CONSUMPTION
+The -o Option: Output File Name
+The -f Option: Output File Format
+The -l Option: Generating a Listing File
+The -L Option: Additional or Modified Listing Info
+The -M Option: Generate Makefile Dependencies
+The -MG Option: Generate Makefile Dependencies
+The -MF Option: Set Makefile Dependency File
+The -MD Option: Assemble and Generate Dependencies
+The -MT Option: Dependency Target Name
+The -MQ Option: Dependency Target Name (Quoted)
+The -MP Option: Emit Phony Makefile Targets
+The -MW Option: Watcom make quoting style
+The -F Option: Debug Information Format
+The -g Option: Enabling Debug Information.
+The -X Option: Selecting an Error Reporting Format
+The -Z Option: Send Errors to a File
+The -s Option: Send Errors to stdout
+The -i Option: Include File Search Directories
+The -p Option: Pre-Include a File
+The -d Option: Pre-Define a Macro
+The -u Option: Undefine a Macro
+The -E Option: Preprocess Only
+The -a Option: Suppress Preprocessing
+The -O Option: Multipass Optimization
+The -t Option: TASM Compatibility Mode
+The -w and -W Options: Enable or Disable Assembly Warnings
+The -v Option: Display Version Info
+The --[gl]prefix and --[gl]postfix Options
+The --pragma Option
+The --before Option
+The --bits Option
+The --limit- Options
+The --keep-all Option
+The --no-line Option
+The --reproducible Option
+The NASMENV Environment Variable
