@@ -1,3 +1,36 @@
+Pseudo-Instructions
+      Dx: Declaring Initialized Data
+      RESB and Friends: Declaring Uninitialized Data
+      INCBIN: Including External Binary Files
+      EQU: Defining Constants
+      TIMES: Repeating Instructions or Data
+Effective Addresses
+Constants
+      Numeric Constants
+      Character Strings
+      Character Constants
+      String Constants
+      Unicode Strings
+      Floating-Point Constants
+      Packed BCD Constants
+Expressions
+      ? ... :: Conditional Operator
+      : ||: Boolean OR Operator
+      : ^^: Boolean XOR Operator
+      : &&: Boolean AND Operator
+      : Comparison Operators
+      |: Bitwise OR Operator
+      ^: Bitwise XOR Operator
+      &: Bitwise AND Operator
+      Bit Shift Operators
+      + and -: Addition and Subtraction Operators
+      Multiplication, Division and Modulo
+      Unary Operators
+SEG and WRT
+STRICT: Inhibiting Optimization
+Critical Expressions
+Local Labels
+
 label:    instruction operands        ; comment
 
 lodsb / lodab / -w+orphan-labels /ill cause it to warn you if you define a label alone on a line without a trailing colon
