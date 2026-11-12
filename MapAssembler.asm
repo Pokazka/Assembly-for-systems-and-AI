@@ -78,6 +78,41 @@ SASS native - no public assembler like nasm
 
 //////////////////////////////////
 
+Podstawowe:
+→ pseudo-ops, NOP, basic arithmetic (ADD/SUB/AND/OR/XOR/ADC/SBB...), 
+  shift/rotate, bit operations (BT/BTS/BTR/BTC, BSF/BSR), 
+  BSWAP, MOVBE, sign/zero extension (MOVSX/MOVZX/CDQE...),
+  decimal (AAA/AAS/AAM/AAD/DAA/DAS – tylko 32-bit)
+
+Przepływ sterowania:
+→ mov, lea, cmp, test
+→ call / ret / jmp / jcc / cmovcc / setcc
+→ syscall / sysret
+→ string instructions (MOVS/STOS/LODS/CMPS/SCAS + REP)
+→ stack (PUSH/POP/ENTER/LEAVE)
+
+Synchronizacja i atomics:
+→ LOCK prefix, XCHG, CMPXCHG, XADD, 
+  MFENCE / LFENCE / SFENCE / PAUSE
+
+Pamięć i system:
+→ invlpg, mov crX / drX, lgdt/lidt/lldt/ltr, 
+  SGDT/SIDT..., CLFLUSH/CLFLUSHOPT/CLWB
+→ RDTSC / RDTSCP / RDPMC / RDRAND / RDSEED / RDPID / CPUID
+→ I/O (IN/OUT/INS/OUTS)
+→ Segment handling
+→ x87 FPU
+→ MMX
+→ SSE / SSE2 / SSE3 / SSSE3 / SSE4.1 / SSE4.2
+→ AVX / AVX2
+→ BMI1 / BMI2
+→ AES-NI + VAES
+→ CLMUL / VPCLMULQDQ
+→ FMA (FMA3)
+→ SHA
+→ GFNI
+→ PREFETCH*
+
 Uniwersalne (bezpieczne na Intel + AMD):
 → pseudo-ops, no operation, basic 8 arithmetic operations, basic shift and rotate operations, basic integer arithmetic
 → AVX, APX EVEX, ADCX/ADOX, SHLD/SHRD, bit operations, BMI1 and BMI2 bit operations, decimal arithmetic, BSWAP/MOVBE, sign and 0 extension, 
@@ -106,12 +141,33 @@ Uniwersalne (bezpieczne na Intel + AMD):
 → AVX Vector Neural Network Instructions / AVX Vector Neural Network Instructions INT8 / AVX Vector Neural Network Instructions INT16
 → Galois field operations (GFNI)
 → User interrupts / History reset
+→ FSGSBASE – uniwersalne (RDFSBASE/WRFSBASE...)
+→ INVPCID – uniwersalne
+→ XSAVE / XRSTOR rodzina – uniwersalne
 
 Intel-only (używaj tylko gdy targetujesz Intel):
-→ pełne AES, AVX AES, AES Key Locker, AVX, AVX-512, AVX2, CLMUL, AVX CLMUL, FMA, APX, TSX, MPX, SHA, PKU aka PKEYs, SGX, CET, AMX, AVX512-FP16, pełne VMX, SMX
+→ pełne AES, AVX AES, AES Key Locker, AVX, AVX-512, AVX2, CLMUL, AVX CLMUL, FMA, APX, TSX, MPX, SHA, PKU aka PKEYs, SGX, CET, AMX, AVX512-FP16, pełne VMX, SMX, RAO-INT, CMPccXADD, UINTR, HRESET
+→ APX (w tym EVEX formy, NDD, NF, ZU, CFCMOVcc, SETccZU...)
+→ SERIALIZE, WBNOINVD, PCONFIG, WAITPKG, MOVDIRI/MOVDIR64B, ENQCMD...
+→ PTWRITE – Intel
+→ TPAUSE / UMONITOR / UMWAIT – Intel (WAITPKG)
+→ SERIALIZE – Intel
 
 AMD-only (używaj tylko gdy targetujesz AMD):
 → SSE4a, CLZERO, MONITORX/MWAITX, SVM, SEV-SNP, XOP, SEV-SNP, LWP, SSE5 XOP and FMA4
+→ PREFETCHW – oryginalnie AMD, teraz uniwersalne
+→ SSE4a (EXTRQ/INSERTQ/MOVNTSD/MOVNTSS)
+→ SVM (AMD-V: VMRUN/VMLOAD/VMSAVE/STGI/CLGI/SKINIT...)
+→ SEV / SEV-ES / SEV-SNP (PSMASH/PVALIDATE/RMPADJUST/RMPUPDATE/VMGEXIT...)
+→ XOP (stare, usunięte z Zen)
+→ FMA4 (stare)
+→ TBM
+→ LWP (Lightweight Profiling – stare)
+→ 3DNow! / Enhanced 3DNow! (stare, usunięte)
+
+Inne nie Intel / AMD
+→ VIA PadLock: XSTORE, XCRYPTECB/CBC/CTR/CFB/OFB, XSHA1/XSHA256, MONTMUL
+→ SM3 / SM4 (głównie Zhaoxin + niektóre nowe chipy)
 
 ////////////////////////////////
 
